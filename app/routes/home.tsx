@@ -2,6 +2,7 @@ import type { Route } from "./+types/home";
 import Header from "../components/Header";
 import ShoppingList from "../components/ShoppingList";
 import ShoppingForm from "~/components/ShoppingForm";
+import { prisma } from '~/server/db'
 
 export function meta({ }: Route.MetaArgs) {
   return [
@@ -11,30 +12,17 @@ export function meta({ }: Route.MetaArgs) {
 }
 
 export async function loader({ request }: Route.LoaderArgs) {
-  // database calls 
-  // this runs on the server
+  const items = await prisma.item.findMany()
   return {
-    data: 'hello sri lanka'
+    items,
   }
 }
 
-export async function action({ request }: Route.ActionArgs) {
-  let formData = request.formData.get('email')
-  // database calls
-  return {
-
-  }
-}
-
-export default function Home({ loaderData }) {
+export default function Home({ loaderData }: Route.ComponentProps) {
   return <div className="max-w-96 pb-4 flex flex-col justify-between h-screen m-auto">
     <div>
-      {loaderData.data}
-      <form>
-        <button></button>
-      </form>
       <Header />
-      <ShoppingList />
+      <ShoppingList items={loaderData.items} />
     </div>
     <ShoppingForm />
   </div>;
